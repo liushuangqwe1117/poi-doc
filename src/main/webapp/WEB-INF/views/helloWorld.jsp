@@ -20,7 +20,7 @@
 <body>
 <!-- 封面页 -->
 <div class="fullpage">
-    <div class="brief">湖北省-襄阳市2018年8月简报<a href="#">下载word</a></div>
+    <div class="brief">湖北省-襄阳市2018年8月简报<a href="javascript:" id="downloadDoc">下载word</a></div>
     <div class="img-wrapper text-center">
         <img src="${ctx}/statics/img/monthlyAnalyze.png" alt="">
     </div>
@@ -93,6 +93,36 @@
     </p>
     <div class="text-center img-wrapper">
         <div id="chartContainer2" style="height: 300px;width: 500px;"></div>
+        <table class="table">
+            <tr>
+                <td></td>
+                <td>班线客运</td>
+                <td>旅游客运</td>
+                <td>危运</td>
+                <td>普通货运</td>
+            </tr>
+            <tr>
+                <td>超速</td>
+                <td>6983</td>
+                <td>691</td>
+                <td>1914</td>
+                <td>4318</td>
+            </tr>
+            <tr>
+                <td>疲劳驾驶</td>
+                <td>1328</td>
+                <td>134</td>
+                <td>428</td>
+                <td>5534</td>
+            </tr>
+            <tr>
+                <td>2-5时禁驾</td>
+                <td>18</td>
+                <td>9</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </table>
     </div>
     <div class="text-center img-wrapper">
         <div id="chartContainer3" style="height: 300px;width: 500px;"></div>
@@ -1598,19 +1628,57 @@
         </table>
     </div>
 </div>
+<form id="downloadForm" action="${ctx}/download.html" method="post">
+</form>
+<script type="text/javascript" src="${ctx}/statics/script/jquery-1.8.1.js"></script>
 <script type="text/javascript" src="${ctx}/statics/script/echarts.common.min.js"></script>
 <script type="text/javascript">
+    $(function () {
+        var PER_PIC_SIZE = 60000;
+
+        function getPicData(chartContainerId, paramName) {
+            var chartContainer = document.getElementById(chartContainerId);
+            var canvasObj = chartContainer.getElementsByTagName("canvas")[0];
+            var picData = canvasObj.toDataURL('image/jpeg', 1.0);
+            console.info("picData.length=" + picData.length);
+
+            var size = picData.length / PER_PIC_SIZE;
+            if (size * PER_PIC_SIZE < picData.length) {
+                size = size + 1;
+            }
+            for (var i = 0; i < size; i++) {
+                var endIndex = (i + 1) * PER_PIC_SIZE;
+                if (endIndex > picData.length) {
+                    endIndex = picData.length;
+                }
+                var data = picData.substring(i * PER_PIC_SIZE, endIndex);
+                $("#downloadForm").append('<input type="hidden" name="' + paramName + i + '" value="' + data + '" />');
+            }
+        }
+
+        $("#downloadDoc").click(function () {
+            $("#downloadForm").html("");
+            //将图片转为base64传递到后台
+            getPicData("chartContainer1", "char1Data");
+            getPicData("chartContainer2", "char2Data");
+            getPicData("chartContainer3", "char3Data");
+            $("#downloadForm").submit();
+        });
+    });
+
     initChartContainer1();
     initChartContainer2();
     initChartContainer3();
+
     function initChartContainer1() {
         var dom = document.getElementById("chartContainer1");
         var myChart = echarts.init(dom);
         var option = {
+            backgroundColor:'#FFFFFF',
             title: {
                 text: '各类营运车辆数占比',
                 x: 'center',
-                top:10,
+                top: 10,
                 textStyle: {
                     fontSize: 18,
                     align: 'center',
@@ -1620,8 +1688,8 @@
             legend: {
                 bottom: 10,
                 left: 'center',
-                itemWidth:12,
-                itemHeight:12,
+                itemWidth: 12,
+                itemHeight: 12,
                 data: [{name: '班线客运', icon: 'square'},
                     {name: '旅游客运', icon: 'square'},
                     {name: '危运', icon: 'square'},
@@ -1662,10 +1730,12 @@
             myChart.setOption(option, true);
         }
     }
+
     function initChartContainer2() {
         var dom = document.getElementById("chartContainer2");
         var myChart = echarts.init(dom);
         var option = {
+            backgroundColor:'#FFFFFF',
             title: {
                 text: '襄阳市2018年8月份报警情况统计表',
                 x: 'center',
@@ -1686,8 +1756,8 @@
             legend: {
                 bottom: 10,
                 left: 'center',
-                itemWidth:12,
-                itemHeight:12,
+                itemWidth: 12,
+                itemHeight: 12,
                 data: [{name: '超速', icon: 'square'},
                     {name: '疲劳驾驶', icon: 'square'},
                     {name: '2-5时禁驾', icon: 'square'}]
@@ -1697,12 +1767,21 @@
                 {
                     type: 'category',
                     axisTick: {show: false},
-                    data: ['班线客运', '旅游客运', '危运', '普通货运']
+                    data: ['班线客运', '旅游客运', '危运', '普通货运'],
+                    axisLine: {
+                        show: false
+                    }
                 }
             ],
             yAxis: [
                 {
-                    type: 'value'
+                    type: 'value',
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    }
                 }
             ],
             series: [
@@ -1710,19 +1789,19 @@
                     name: '超速',
                     type: 'bar',
                     barGap: 0,
-                    barWidth:20,
+                    barWidth: 20,
                     data: [320, 332, 301, 334]
                 },
                 {
                     name: '疲劳驾驶',
                     type: 'bar',
-                    barWidth:20,
+                    barWidth: 20,
                     data: [220, 182, 191, 234]
                 },
                 {
                     name: '2-5时禁驾',
                     type: 'bar',
-                    barWidth:20,
+                    barWidth: 20,
                     data: [150, 232, 201, 154]
                 }
             ]
@@ -1731,14 +1810,16 @@
             myChart.setOption(option, true);
         }
     }
+
     function initChartContainer3() {
         var dom = document.getElementById("chartContainer3");
         var myChart = echarts.init(dom);
         var option = {
+            backgroundColor:'#FFFFFF',
             title: {
                 text: '三类违规报警次数占比情况',
                 x: 'center',
-                top:10,
+                top: 10,
                 textStyle: {
                     fontSize: 18,
                     align: 'center',
@@ -1748,8 +1829,8 @@
             legend: {
                 bottom: 10,
                 left: 'center',
-                itemWidth:12,
-                itemHeight:12,
+                itemWidth: 12,
+                itemHeight: 12,
                 data: [{name: '超速', icon: 'square'},
                     {name: '疲劳驾驶', icon: 'square'},
                     {name: '2-5时禁驾', icon: 'square'}]

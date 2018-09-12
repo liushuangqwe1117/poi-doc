@@ -1,5 +1,6 @@
 package com.cad.poidocx.entity.city.template1;
 
+import com.deepoove.poi.config.Name;
 import com.deepoove.poi.data.PictureRenderData;
 
 /**
@@ -22,6 +23,16 @@ public class Template1_Part1 extends Template1_BaseAlarmInfo {
     private PictureRenderData picture1;
     private PictureRenderData picture2;
     private PictureRenderData picture3;
+    @Name("chartTable")
+    private Tempate1_SimpleTableData chartTable;
+
+    public Tempate1_SimpleTableData getChartTable() {
+        return chartTable;
+    }
+
+    public void setChartTable(Tempate1_SimpleTableData chartTable) {
+        this.chartTable = chartTable;
+    }
 
     public String getSummaryReportDate() {
         return summaryReportDate;

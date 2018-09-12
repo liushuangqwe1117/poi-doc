@@ -3,15 +3,13 @@ package com.cad.poidocx.entity.city.template1;
 import com.cad.poidocx.policy.Tempate1_SimpleTableDataPolicy;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
-import com.deepoove.poi.data.DocxRenderData;
-import com.deepoove.poi.data.PictureRenderData;
-import com.deepoove.poi.data.RowRenderData;
-import com.deepoove.poi.data.TextRenderData;
+import com.deepoove.poi.data.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -19,11 +17,35 @@ import java.util.*;
  */
 @Component
 public class Template1Client {
-    public static void main(String[] args) {
-        try {
-            Template1Client client = new Template1Client();
-            Template1Data datas = client.getTemplate1Data();
+    private byte[] pic1Bytes = null;
+    private byte[] pic2Bytes = null;
+    private byte[] pic3Bytes = null;
+    private OutputStream outputStream;
 
+    public void setPic1Bytes(byte[] pic1Bytes) {
+        this.pic1Bytes = pic1Bytes;
+    }
+
+    public void setPic2Bytes(byte[] pic2Bytes) {
+        this.pic2Bytes = pic2Bytes;
+    }
+
+    public void setPic3Bytes(byte[] pic3Bytes) {
+        this.pic3Bytes = pic3Bytes;
+    }
+
+    public void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
+
+    public static void main(String[] args) {
+        Template1Client client = new Template1Client();
+        client.makeDocx();
+    }
+
+    public void makeDocx() {
+        try {
+            Template1Data datas = getTemplate1Data();
             /**
              * 生成第一部分数据
              */
@@ -35,10 +57,54 @@ public class Template1Client {
             part1.setSummaryReportDate(datas.getSummaryReportDate());
             part1.setAreaName(datas.getAreaName());
             part1.setSummaryReportGenerateDate(datas.getSummaryReportGenerateDate());
-            part1.setPicture1(new PictureRenderData(511, 300, "D:\\project\\poi-doc\\src\\test\\resources\\pic1.png"));
-            part1.setPicture2(new PictureRenderData(491, 297, "D:\\project\\poi-doc\\src\\test\\resources\\pic2.png"));
-            part1.setPicture3(new PictureRenderData(495, 297, "D:\\project\\poi-doc\\src\\test\\resources\\pic3.png"));
+            if (pic1Bytes != null) {
+                part1.setPicture1(new PictureRenderData(500, 300, ".jpeg", pic1Bytes));
+            } else {
+                part1.setPicture1(new PictureRenderData(500, 300, "D:\\project\\poi-doc\\src\\test\\resources\\pic1.png"));
+            }
+
+            if (pic2Bytes != null) {
+                part1.setPicture2(new PictureRenderData(500, 300, ".jpeg", pic2Bytes));
+            } else {
+                part1.setPicture2(new PictureRenderData(500, 300, "D:\\project\\poi-doc\\src\\test\\resources\\pic2.png"));
+            }
+
+            if (pic3Bytes != null) {
+                part1.setPicture3(new PictureRenderData(500, 300, ".jpeg", pic3Bytes));
+            } else {
+                part1.setPicture3(new PictureRenderData(500, 300, "D:\\project\\poi-doc\\src\\test\\resources\\pic3.png"));
+            }
             part1List.add(part1);
+
+            // 生成自定义表格
+            RowRenderData row1 = RowRenderData.build(
+                    new TextRenderData("", Template_Style.songTextStyle),
+                    new TextRenderData("班线客运", Template_Style.songTextStyle),
+                    new TextRenderData("旅游客运", Template_Style.songTextStyle),
+                    new TextRenderData("危险品运输", Template_Style.songTextStyle),
+                    new TextRenderData("普通货运", Template_Style.songTextStyle),
+                    new TextRenderData("合计", Template_Style.songTextStyle));
+            RowRenderData row2 = RowRenderData.build(
+                    new TextRenderData("上月", Template_Style.songTextStyle),
+                    new TextRenderData("19503", Template_Style.songTextStyle),
+                    new TextRenderData("1244", Template_Style.songTextStyle),
+                    new TextRenderData("2858", Template_Style.songTextStyle),
+                    new TextRenderData("9595", Template_Style.songTextStyle),
+                    new TextRenderData("33200", Template_Style.songTextStyle));
+            RowRenderData row3 = RowRenderData.build(
+                    new TextRenderData("本月", Template_Style.songTextStyle),
+                    new TextRenderData("8329", Template_Style.songTextStyle),
+                    new TextRenderData("834", Template_Style.songTextStyle),
+                    new TextRenderData("2342", Template_Style.songTextStyle),
+                    new TextRenderData("9852", Template_Style.songTextStyle),
+                    new TextRenderData("21357", Template_Style.songTextStyle));
+            row1.setStyle(Template_Style.rowStyle);
+            row2.setStyle(Template_Style.rowStyle);
+            row3.setStyle(Template_Style.rowStyle);
+
+            Tempate1_SimpleTableData chartTable = new Tempate1_SimpleTableData();
+            chartTable.setDatas(Arrays.asList(row1, row2, row3));
+            part1.setChartTable(chartTable);
 
             DocxRenderData segment = new DocxRenderData(new File("D:\\project\\poi-doc\\src\\main\\resources\\template\\city\\city_template1_part1.docx"), part1List);
             /**
@@ -86,17 +152,21 @@ public class Template1Client {
             /**
              * 集合处理
              */
-            Map<String, Object> dataMap = client.getBaseDataMap(datas);
+            Map<String, Object> dataMap = getBaseDataMap(datas);
             dataMap.put("segment", segment);
             dataMap.put("segment2", segment2);
 
-            Configure config = Configure.newBuilder().customPolicy("part2AllAlarmTableData", new Tempate1_SimpleTableDataPolicy(1, 5, 0, 1))
+            Configure config = Configure.newBuilder()
+                    .customPolicy("part2AllAlarmTableData", new Tempate1_SimpleTableDataPolicy(1, 5, 0, 1))
+                    .customPolicy("chartTable", new Tempate1_SimpleTableDataPolicy(0, 6))
                     .build();
-            XWPFTemplate template = XWPFTemplate.compile("src/main/resources/template/city/city_template1.docx", config).render(dataMap);
-            FileOutputStream baseOut = new FileOutputStream("out_city_template1.docx");
-            template.write(baseOut);
-            baseOut.flush();
-            baseOut.close();
+            XWPFTemplate template = XWPFTemplate.compile("D:\\project\\poi-doc\\src\\main\\resources\\template\\city\\city_template1.docx", config).render(dataMap);
+            if (outputStream == null) {
+                outputStream = new FileOutputStream("D:\\project\\poi-doc\\out_city_template1.docx");
+            }
+            template.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
             template.close();
         } catch (Exception e) {
             e.printStackTrace();

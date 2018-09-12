@@ -8,6 +8,13 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STJc;
  * Created by LS on 2018/9/11 0011.
  */
 public class Template_Style {
+    public static final Style songTextStyle = new Style() {
+        {
+            setFontFamily("宋体");
+            setFontSize(10);
+        }
+    };
+
     public static final Style textStyle = new Style() {
         {
             setFontFamily("仿宋");
