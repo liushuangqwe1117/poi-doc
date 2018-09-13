@@ -81,29 +81,33 @@ public class Template1Client {
                     new TextRenderData("", Template_Style.songTextStyle),
                     new TextRenderData("班线客运", Template_Style.songTextStyle),
                     new TextRenderData("旅游客运", Template_Style.songTextStyle),
-                    new TextRenderData("危险品运输", Template_Style.songTextStyle),
-                    new TextRenderData("普通货运", Template_Style.songTextStyle),
-                    new TextRenderData("合计", Template_Style.songTextStyle));
+                    new TextRenderData("危运", Template_Style.songTextStyle),
+                    new TextRenderData("普通货运", Template_Style.songTextStyle));
             RowRenderData row2 = RowRenderData.build(
-                    new TextRenderData("上月", Template_Style.songTextStyle),
-                    new TextRenderData("19503", Template_Style.songTextStyle),
-                    new TextRenderData("1244", Template_Style.songTextStyle),
-                    new TextRenderData("2858", Template_Style.songTextStyle),
-                    new TextRenderData("9595", Template_Style.songTextStyle),
-                    new TextRenderData("33200", Template_Style.songTextStyle));
+                    new TextRenderData("超速", Template_Style.songTextStyle),
+                    new TextRenderData("6983", Template_Style.songTextStyle),
+                    new TextRenderData("691", Template_Style.songTextStyle),
+                    new TextRenderData("1914", Template_Style.songTextStyle),
+                    new TextRenderData("4318", Template_Style.songTextStyle));
             RowRenderData row3 = RowRenderData.build(
-                    new TextRenderData("本月", Template_Style.songTextStyle),
-                    new TextRenderData("8329", Template_Style.songTextStyle),
-                    new TextRenderData("834", Template_Style.songTextStyle),
-                    new TextRenderData("2342", Template_Style.songTextStyle),
-                    new TextRenderData("9852", Template_Style.songTextStyle),
-                    new TextRenderData("21357", Template_Style.songTextStyle));
+                    new TextRenderData("疲劳驾驶", Template_Style.songTextStyle),
+                    new TextRenderData("1328", Template_Style.songTextStyle),
+                    new TextRenderData("134", Template_Style.songTextStyle),
+                    new TextRenderData("428", Template_Style.songTextStyle),
+                    new TextRenderData("5534", Template_Style.songTextStyle));
+            RowRenderData row4 = RowRenderData.build(
+                    new TextRenderData("2-5时禁驾", Template_Style.songTextStyle),
+                    new TextRenderData("18", Template_Style.songTextStyle),
+                    new TextRenderData("9", Template_Style.songTextStyle),
+                    new TextRenderData("0", Template_Style.songTextStyle),
+                    new TextRenderData("0", Template_Style.songTextStyle));
             row1.setStyle(Template_Style.rowStyle);
             row2.setStyle(Template_Style.rowStyle);
             row3.setStyle(Template_Style.rowStyle);
+            row4.setStyle(Template_Style.rowStyle);
 
             Tempate1_SimpleTableData chartTable = new Tempate1_SimpleTableData();
-            chartTable.setDatas(Arrays.asList(row1, row2, row3));
+            chartTable.setDatas(Arrays.asList(row1, row2, row3, row4));
             part1.setChartTable(chartTable);
 
             DocxRenderData segment = new DocxRenderData(new File("D:\\project\\poi-doc\\src\\main\\resources\\template\\city\\city_template1_part1.docx"), part1List);
@@ -158,7 +162,7 @@ public class Template1Client {
 
             Configure config = Configure.newBuilder()
                     .customPolicy("part2AllAlarmTableData", new Tempate1_SimpleTableDataPolicy(1, 5, 0, 1))
-                    .customPolicy("chartTable", new Tempate1_SimpleTableDataPolicy(0, 6))
+                    .customPolicy("chartTable", new Tempate1_SimpleTableDataPolicy(0, 5))
                     .build();
             XWPFTemplate template = XWPFTemplate.compile("D:\\project\\poi-doc\\src\\main\\resources\\template\\city\\city_template1.docx", config).render(dataMap);
             if (outputStream == null) {

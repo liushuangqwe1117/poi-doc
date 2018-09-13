@@ -1790,19 +1790,19 @@
                     type: 'bar',
                     barGap: 0,
                     barWidth: 20,
-                    data: [320, 332, 301, 334]
+                    data: [6983, 691, 1914, 4318]
                 },
                 {
                     name: '疲劳驾驶',
                     type: 'bar',
                     barWidth: 20,
-                    data: [220, 182, 191, 234]
+                    data: [1328, 134, 428, 5534]
                 },
                 {
                     name: '2-5时禁驾',
                     type: 'bar',
                     barWidth: 20,
-                    data: [150, 232, 201, 154]
+                    data: [18, 9, 0, 0]
                 }
             ]
         };
