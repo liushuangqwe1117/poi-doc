@@ -6,11 +6,13 @@ import com.cad.poidocx.entity.city.template1.Template1Client;
 import com.cad.poidocx.entity.city.template1.Template1Data;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -23,7 +25,7 @@ public class HelloWorldController {
     Template1Client client;
 
     @RequestMapping("/helloWorld")
-    public String helloWorld(Model model) {
+    public String helloWorld(Model model,HttpServletRequest request) {
         Template1Data template1Data = client.getTemplate1Data();
         model.addAttribute("data", template1Data);
 
@@ -33,6 +35,15 @@ public class HelloWorldController {
         chartContainer1Values.add(new NameValueDto("危运", template1Data.getBaseAlarmInfo().getBusVehicleNumber()));
         chartContainer1Values.add(new NameValueDto("普通货运", template1Data.getBaseAlarmInfo().getBusVehicleNumber()));
         model.addAttribute("chartContainer1Values", JSON.toJSON(chartContainer1Values));
+
+        model.addAttribute("contextPath",request.getContextPath());
+        System.out.println("contextPath：" + request.getContextPath());
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            for(Cookie ck : cookies){
+                System.out.println(ToStringBuilder.reflectionToString(ck));
+            }
+        }
 
         return "helloWorld";
     }

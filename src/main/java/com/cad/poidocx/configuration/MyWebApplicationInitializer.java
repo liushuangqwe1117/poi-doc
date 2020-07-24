@@ -1,7 +1,12 @@
 package com.cad.poidocx.configuration;
 
+import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.Filter;
+
+@Order(2)
 public class MyWebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
@@ -17,5 +22,13 @@ public class MyWebApplicationInitializer extends AbstractAnnotationConfigDispatc
     @Override
     protected Class<?>[] getServletConfigClasses() {
         return new Class<?>[]{WebApplicationConfiguration.class};
+    }
+
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        characterEncodingFilter.setForceEncoding(true);
+        return new Filter[] {characterEncodingFilter};
     }
 }
